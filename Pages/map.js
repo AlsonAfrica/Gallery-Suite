@@ -1,42 +1,26 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 
-
-// 
-export default function Map({ navigation }) {
+export default function Map({navigation}) {
   return (
     <View style={styles.container}>
-      <SafeAreaView style={styles.content}>
-        <StatusBar style="auto" />
-        <Text style={styles.text}>Welcome to the Map Page</Text>
-      </SafeAreaView>
-      
-      {/* Custom Bottom Navigation Bar */}
-      <View style={styles.navBar}>
-        {/* First Button */}
-        <TouchableOpacity
-          style={styles.navButton}
-          onPress={() => navigation.navigate('Home')}
-        >
-          <Text style={styles.navText}>Home</Text>
-        </TouchableOpacity>
-        {/* Second Button */}
-        <TouchableOpacity
-          style={styles.navButton}
-          onPress={() => navigation.navigate('Profile')}
-        >
-          <Text style={styles.navText}>Profile</Text>
-        </TouchableOpacity>
-        {/* Third Button */}
-        <TouchableOpacity
-          style={styles.navButton}
-          onPress={() => navigation.navigate('Settings')}
-        >
-          <Text style={styles.navText}>Settings</Text>
-        </TouchableOpacity>
-      </View>
+      <MapView
+        style={styles.map}
+        initialRegion={{
+          latitude: 37.78825, // Default latitude
+          longitude: -122.4324, // Default longitude
+          latitudeDelta: 0.0922, // Zoom level
+          longitudeDelta: 0.0421, // Zoom level
+        }}
+      >
+        {/* Example Marker */}
+        <Marker
+          coordinate={{ latitude: 37.78825, longitude: -122.4324 }}
+          title="Marker Title"
+          description="This is a description of the marker"
+        />
+      </MapView>
     </View>
   );
 }
@@ -44,33 +28,8 @@ export default function Map({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
-  content: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  text: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  navBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    height: 60,
-    backgroundColor: '#f8f8f8',
-    borderTopWidth: 1,
-    borderTopColor: '#ddd',
-  },
-  navButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 10,
-  },
-  navText: {
-    fontSize: 16,
-    color: '#007BFF',
+  map: {
+    flex: 1, // Ensure the map fills the container
   },
 });
