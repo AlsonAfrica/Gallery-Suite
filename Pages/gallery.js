@@ -1,17 +1,23 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, Dimensions, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, Dimensions, ActivityIndicator, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native';
 import * as SQLite from 'expo-sqlite';
 
 export default function Gallery({ navigation }) {
   const [photos, setPhotos] = useState([]);
+  const [filteredPhotos, setFilteredPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
   const [db, setDb] = useState(null);
 
   useEffect(() => {
     initDB();
   }, []);
+
+  useEffect(() => {
+    filterPhotos();
+  }, [searchQuery, photos]);
 
   const initDB = async () => {
     try {
@@ -28,11 +34,32 @@ export default function Gallery({ navigation }) {
     try {
       const results = await database.getAllAsync('SELECT * FROM photos ORDER BY timestamp DESC');
       setPhotos(results);
+      setFilteredPhotos(results);
     } catch (error) {
       console.error('Error loading photos:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const filterPhotos = () => {
+    if (!searchQuery.trim()) {
+      setFilteredPhotos(photos);
+      return;
+    }
+
+    const query = searchQuery.toLowerCase();
+    const filtered = photos.filter(photo => {
+      const date = new Date(photo.timestamp).toLocaleDateString().toLowerCase();
+      const hasLocation = photo.latitude && photo.longitude;
+      const locationString = hasLocation 
+        ? `${photo.latitude},${photo.longitude}`.toLowerCase()
+        : '';
+      
+      return date.includes(query) || locationString.includes(query);
+    });
+    
+    setFilteredPhotos(filtered);
   };
 
   const refreshGallery = () => {
@@ -43,7 +70,7 @@ export default function Gallery({ navigation }) {
   };
 
   const handlePhotoPress = (photo) => {
-    navigation.navigate('PhotoDetail', { photo });
+    navigation.navigate('Image', { photo });
   };
 
   const renderPhoto = ({ item }) => (
@@ -65,13 +92,17 @@ export default function Gallery({ navigation }) {
 
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
-      <Text style={styles.emptyStateText}>No photos yet</Text>
-      <TouchableOpacity 
-        style={styles.captureButton}
-        onPress={() => navigation.navigate('Camera')}
-      >
-        <Text style={styles.captureButtonText}>Take a Photo</Text>
-      </TouchableOpacity>
+      <Text style={styles.emptyStateText}>
+        {searchQuery.trim() ? 'No matching photos found' : 'No photos yet'}
+      </Text>
+      {!searchQuery.trim() && (
+        <TouchableOpacity 
+          style={styles.captureButton}
+          onPress={() => navigation.navigate('Image',{ photos })}
+        >
+          <Text style={styles.captureButtonText}>Take a Photo</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 
@@ -87,11 +118,21 @@ export default function Gallery({ navigation }) {
           </TouchableOpacity>
         </View>
 
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search by date..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            clearButtonMode="while-editing"
+          />
+        </View>
+
         {loading ? (
           <ActivityIndicator size="large" color="#007BFF" />
         ) : (
           <FlatList
-            data={photos}
+            data={filteredPhotos}
             renderItem={renderPhoto}
             keyExtractor={(item) => item.id.toString()}
             numColumns={4}
@@ -101,14 +142,12 @@ export default function Gallery({ navigation }) {
           />
         )}
       </SafeAreaView>
-      {/* Custom Bottom Navigation Bar */}
     </View>
   );
 }
 
-
 const windowWidth = Dimensions.get('window').width;
-const photoSize = (windowWidth - 50) / 4; // 2 columns with margins
+const photoSize = (windowWidth - 50) / 4;
 
 const styles = StyleSheet.create({
   container: {
@@ -126,6 +165,18 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
+  },
+  searchContainer: {
+    padding: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  searchInput: {
+    height: 40,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    fontSize: 16,
   },
   title: {
     fontSize: 24,
@@ -177,23 +228,5 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-  },
-  navBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    height: 60,
-    backgroundColor: '#f8f8f8',
-    borderTopWidth: 1,
-    borderTopColor: '#ddd',
-  },
-  navButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 10,
-  },
-  navText: {
-    fontSize: 16,
-    color: '#007BFF',
   },
 });

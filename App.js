@@ -8,6 +8,7 @@ import HomePage from './Pages/homePage';
 import Map from './Pages/map';
 import Gallery from './Pages/gallery';
 import Camera from './Pages/cameraPage';
+import ImageFullScreen from './Pages/imageFullScreen';
 
 
 const Stack = createStackNavigator();
@@ -35,6 +36,11 @@ export default function App() {
           name="Camera" 
           component={Camera} 
           options={{ title: 'Camera' }} 
+        />
+        <Stack.Screen 
+          name="Image" 
+          component={ImageFullScreen} 
+          options={{ title: 'Image' }} 
         />
       </Stack.Navigator>
       <StatusBar style="auto" />
