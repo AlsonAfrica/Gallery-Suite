@@ -2,9 +2,12 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+
+// Pages 
 import HomePage from './Pages/homePage';
-import Profile from './Pages/profile';
 import Map from './Pages/map';
+import Gallery from './Pages/gallery';
+import Camera from './Pages/cameraPage';
 
 
 const Stack = createStackNavigator();
@@ -19,14 +22,19 @@ export default function App() {
           options={{ title: 'Welcome Home' }} 
         />
         <Stack.Screen 
-          name="Profile" 
-          component={Profile} 
-          options={{ title: 'Welcome Profile' }} 
+          name="Gallery" 
+          component={Gallery} 
+          options={{ title: 'Welcome Gallery' }} 
         />
         <Stack.Screen 
           name="Map" 
           component={Map} 
           options={{ title: 'Map' }} 
+        />
+        <Stack.Screen 
+          name="Camera" 
+          component={Camera} 
+          options={{ title: 'Camera' }} 
         />
       </Stack.Navigator>
       <StatusBar style="auto" />

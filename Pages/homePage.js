@@ -3,13 +3,17 @@ import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native';
 
+
 // Icons
 import Entypo from '@expo/vector-icons/Entypo';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Feather from '@expo/vector-icons/Feather';
 
+
+
 // Beginning of component
-export default function HomePage({ navigation }) {
+export default function HomePage({ navigation}) {
+   
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.content}>
@@ -21,13 +25,13 @@ export default function HomePage({ navigation }) {
       <View style={styles.navBar}>
         <TouchableOpacity
           style={styles.navButton}
-          onPress={() => navigation.navigate('Home')}
+          onPress={() => navigation.navigate('Gallery')}
         >
           <Text style={styles.navText}><MaterialCommunityIcons name="view-gallery-outline" size={26} color="black" /></Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navButton}
-          onPress={() => navigation.navigate('Profile')}
+          onPress={() => navigation.navigate('Camera')}
         >
           <Text style={styles.navText}><Entypo name="camera" size={40} color="black" /></Text>
         </TouchableOpacity>

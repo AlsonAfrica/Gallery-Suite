@@ -5,12 +5,12 @@ import { SafeAreaView } from 'react-native';
 
 
 // 
-export default function Profile({ navigation }) {
+export default function Gallery({ navigation }) {
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.content}>
         <StatusBar style="auto" />
-        <Text style={styles.text}>Welcome to the Profile Page</Text>
+        <Text style={styles.text}>Welcome to Gallery</Text>
       </SafeAreaView>
       
       {/* Custom Bottom Navigation Bar */}
