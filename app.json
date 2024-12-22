@@ -40,7 +40,8 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow Gallery-Suite to use your location."
         }
-      ]
+      ],
+      "expo-sqlite"
     ]
   }
 }

@@ -2,6 +2,8 @@ import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useState, useRef, useEffect } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View, Image, Dimensions } from 'react-native';
 import * as Location from 'expo-location';
+import * as SQLite from 'expo-sqlite';
+import * as FileSystem from 'expo-file-system';
 
 export default function Camera() {
   const [facing, setFacing] = useState('back');
@@ -9,19 +11,47 @@ export default function Camera() {
   const [photo, setPhoto] = useState(null);
   const [location, setLocation] = useState(null);
   const [locationPermission, setLocationPermission] = useState(null);
+  const [db, setDb] = useState(null);
   const cameraRef = useRef(null);
 
   useEffect(() => {
-    (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      setLocationPermission(status === 'granted');
-      
-      if (status === 'granted') {
-        const location = await Location.getCurrentPositionAsync({});
-        setLocation(location);
-      }
-    })();
+    const setup = async () => {
+      await initDB();
+      await setupLocationPermissions();
+    };
+    setup();
   }, []);
+
+  const initDB = async () => {
+    try {
+      const database = await SQLite.openDatabaseAsync('photos.db');
+      await database.execAsync(`
+        PRAGMA journal_mode = WAL;
+        CREATE TABLE IF NOT EXISTS photos (
+          id INTEGER PRIMARY KEY NOT NULL,
+          uri TEXT NOT NULL,
+          timestamp TEXT NOT NULL,
+          latitude REAL,
+          longitude REAL,
+          altitude REAL,
+          accuracy REAL
+        );
+      `);
+      setDb(database);
+    } catch (error) {
+      console.error('Database initialization error:', error);
+    }
+  };
+
+  const setupLocationPermissions = async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    setLocationPermission(status === 'granted');
+    
+    if (status === 'granted') {
+      const location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+    }
+  };
 
   if (!permission) {
     return <View />;
@@ -36,9 +66,49 @@ export default function Camera() {
     );
   }
 
-  function toggleCameraFacing() {
+  const toggleCameraFacing = () => {
     setFacing(current => (current === 'back' ? 'front' : 'back'));
-  }
+  };
+
+  const savePhotoToDisk = async (uri) => {
+    const fileName = uri.split('/').pop();
+    const newPath = `${FileSystem.documentDirectory}photos/${fileName}`;
+    
+    // Ensure directory exists
+    await FileSystem.makeDirectoryAsync(`${FileSystem.documentDirectory}photos`, {
+      intermediates: true
+    }).catch(e => {
+      console.log('Directory already exists');
+    });
+
+    // Copy the file
+    await FileSystem.copyAsync({
+      from: uri,
+      to: newPath
+    });
+
+    return newPath;
+  };
+
+  const savePhotoToDatabase = async (photoData) => {
+    try {
+      const result = await db.runAsync(
+        'INSERT INTO photos (uri, timestamp, latitude, longitude, altitude, accuracy) VALUES (?, ?, ?, ?, ?, ?)',
+        [
+          photoData.uri,
+          photoData.timestamp,
+          photoData.location?.latitude || null,
+          photoData.location?.longitude || null,
+          photoData.location?.altitude || null,
+          photoData.location?.accuracy || null
+        ]
+      );
+      return result.lastInsertRowId;
+    } catch (error) {
+      console.error('Error saving to database:', error);
+      throw error;
+    }
+  };
 
   const takePicture = async () => {
     if (cameraRef.current) {
@@ -51,7 +121,6 @@ export default function Camera() {
         const photo = await cameraRef.current.takePictureAsync();
         const timestamp = new Date().toISOString();
         
-        // Combine photo with metadata
         const photoWithMetadata = {
           ...photo,
           timestamp,
@@ -74,10 +143,43 @@ export default function Camera() {
     setPhoto(null);
   };
 
-  const confirmPicture = () => {
-    // Handle the confirmed picture here
-    console.log('Picture confirmed with metadata:', photo);
-    // You could save it, upload it, or pass it to another component
+  const confirmPicture = async () => {
+    try {
+      if (!db) {
+        throw new Error('Database not initialized');
+      }
+
+      // Save photo to permanent storage
+      const permanentUri = await savePhotoToDisk(photo.uri);
+      
+      // Update photo object with permanent URI
+      const photoToSave = {
+        ...photo,
+        uri: permanentUri
+      };
+
+      // Save to database
+      const photoId = await savePhotoToDatabase(photoToSave);
+      console.log('Photo saved with ID:', photoId);
+      
+      // Clear the preview
+      setPhoto(null);
+      
+    } catch (error) {
+      console.error('Error saving photo:', error);
+      alert('Failed to save photo');
+    }
+  };
+
+  // Function to retrieve all photos (useful for debugging or viewing gallery)
+  const getAllPhotos = async () => {
+    try {
+      const photos = await db.getAllAsync('SELECT * FROM photos ORDER BY timestamp DESC');
+      return photos;
+    } catch (error) {
+      console.error('Error retrieving photos:', error);
+      throw error;
+    }
   };
 
   if (photo) {
@@ -103,7 +205,7 @@ export default function Camera() {
             <Text style={styles.text}>Retake</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.previewButton} onPress={confirmPicture}>
-            <Text style={styles.text}>Confirm</Text>
+            <Text style={styles.text}>Save</Text>
           </TouchableOpacity>
         </View>
       </View>
