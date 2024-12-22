@@ -34,6 +34,12 @@
           "microphonePermission": "Allow $(Gallery-Suite) to access your microphone",
           "recordAudioAndroid": true
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Gallery-Suite to use your location."
+        }
       ]
     ]
   }

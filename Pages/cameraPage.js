@@ -1,12 +1,27 @@
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View, Image, Dimensions } from 'react-native';
+import * as Location from 'expo-location';
 
 export default function Camera() {
   const [facing, setFacing] = useState('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [photo, setPhoto] = useState(null);
+  const [location, setLocation] = useState(null);
+  const [locationPermission, setLocationPermission] = useState(null);
   const cameraRef = useRef(null);
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      setLocationPermission(status === 'granted');
+      
+      if (status === 'granted') {
+        const location = await Location.getCurrentPositionAsync({});
+        setLocation(location);
+      }
+    })();
+  }, []);
 
   if (!permission) {
     return <View />;
@@ -28,8 +43,27 @@ export default function Camera() {
   const takePicture = async () => {
     if (cameraRef.current) {
       try {
+        let currentLocation = null;
+        if (locationPermission) {
+          currentLocation = await Location.getCurrentPositionAsync({});
+        }
+        
         const photo = await cameraRef.current.takePictureAsync();
-        setPhoto(photo);
+        const timestamp = new Date().toISOString();
+        
+        // Combine photo with metadata
+        const photoWithMetadata = {
+          ...photo,
+          timestamp,
+          location: currentLocation ? {
+            latitude: currentLocation.coords.latitude,
+            longitude: currentLocation.coords.longitude,
+            altitude: currentLocation.coords.altitude,
+            accuracy: currentLocation.coords.accuracy,
+          } : null
+        };
+        
+        setPhoto(photoWithMetadata);
       } catch (error) {
         console.error('Failed to take picture:', error);
       }
@@ -42,7 +76,7 @@ export default function Camera() {
 
   const confirmPicture = () => {
     // Handle the confirmed picture here
-    console.log('Picture confirmed:', photo);
+    console.log('Picture confirmed with metadata:', photo);
     // You could save it, upload it, or pass it to another component
   };
 
@@ -53,6 +87,17 @@ export default function Camera() {
           source={{ uri: photo.uri }}
           style={styles.preview}
         />
+        <View style={styles.metadataOverlay}>
+          <Text style={styles.metadataText}>
+            Time: {new Date(photo.timestamp).toLocaleString()}
+          </Text>
+          {photo.location && (
+            <Text style={styles.metadataText}>
+              Location: {photo.location.latitude.toFixed(6)}, {photo.location.longitude.toFixed(6)}
+              {photo.location.altitude ? `\nAltitude: ${photo.location.altitude.toFixed(1)}m` : ''}
+            </Text>
+          )}
+        </View>
         <View style={styles.previewButtons}>
           <TouchableOpacity style={styles.previewButton} onPress={retakePicture}>
             <Text style={styles.text}>Retake</Text>
@@ -148,5 +193,18 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     backgroundColor: 'rgba(255,255,255,0.1)',
+  },
+  metadataOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    padding: 20,
+  },
+  metadataText: {
+    color: 'white',
+    fontSize: 16,
+    marginBottom: 5,
   }
 });
