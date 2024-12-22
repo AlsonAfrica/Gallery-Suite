@@ -3,39 +3,38 @@ import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native';
 
-// Icons
-import Entypo from '@expo/vector-icons/Entypo';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import Feather from '@expo/vector-icons/Feather';
 
-// Beginning of component
-export default function HomePage({ navigation }) {
+// 
+export default function Profile({ navigation }) {
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.content}>
         <StatusBar style="auto" />
-        <Text style={styles.text}>Welcome to the Home Page!</Text>
+        <Text style={styles.text}>Welcome to the Profile Page</Text>
       </SafeAreaView>
       
       {/* Custom Bottom Navigation Bar */}
       <View style={styles.navBar}>
+        {/* First Button */}
         <TouchableOpacity
           style={styles.navButton}
           onPress={() => navigation.navigate('Home')}
         >
-          <Text style={styles.navText}><MaterialCommunityIcons name="view-gallery-outline" size={26} color="black" /></Text>
+          <Text style={styles.navText}>Home</Text>
         </TouchableOpacity>
+        {/* Second Button */}
         <TouchableOpacity
           style={styles.navButton}
           onPress={() => navigation.navigate('Profile')}
         >
-          <Text style={styles.navText}><Entypo name="camera" size={40} color="black" /></Text>
+          <Text style={styles.navText}>Profile</Text>
         </TouchableOpacity>
+        {/* Third Button */}
         <TouchableOpacity
           style={styles.navButton}
-          onPress={() => navigation.navigate('Map')}
+          onPress={() => navigation.navigate('Settings')}
         >
-          <Text style={styles.navText}><Feather name="map-pin" size={26} color="black" /></Text>
+          <Text style={styles.navText}>Settings</Text>
         </TouchableOpacity>
       </View>
     </View>
