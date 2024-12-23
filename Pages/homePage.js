@@ -15,7 +15,7 @@ const { width } = Dimensions.get('window');
 export default function HomePage({ navigation }) {
   const [activeTab, setActiveTab] = useState('home');
 
-  const renderNavButton = (routeName, icon, size = 5) => {
+  const renderNavButton = (routeName, icon, size = 10) => {
     const isActive = activeTab === routeName.toLowerCase();
     return (
       <TouchableOpacity
@@ -98,13 +98,6 @@ export default function HomePage({ navigation }) {
         {renderNavButton('Camera',
           (isActive, size) => <Entypo
             name="camera"
-            size={size + 8}
-            color={isActive ? '#1a2151' : '#636e72'}
-          />
-        )}
-        {renderNavButton('Map',
-          (isActive, size) => <Feather
-            name="map-pin"
             size={size}
             color={isActive ? '#1a2151' : '#636e72'}
           />
