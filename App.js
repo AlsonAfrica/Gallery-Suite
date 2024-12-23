@@ -20,12 +20,12 @@ export default function App() {
         <Stack.Screen 
           name="Home" 
           component={HomePage} 
-          options={{ title: 'Welcome Home' }} 
+          options={{ title: 'Home' }} 
         />
         <Stack.Screen 
           name="Gallery" 
           component={Gallery} 
-          options={{ title: 'Welcome Gallery' }} 
+          options={{ title: 'Gallery' }} 
         />
         <Stack.Screen 
           name="Map" 

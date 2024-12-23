@@ -2,24 +2,50 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
-export default function Map({navigation}) {
+export default function Map({ navigation, route }) {
+  const { photos } = route.params;
+
+  // Filter and map photos to extract valid locations
+  const locations = photos
+
+  // Filter out latitude and longitude from photos
+    .filter(photo => photo.latitude && photo.longitude) 
+
+    // Map through photos
+    .map(photo => ({
+      id: photo.id,
+      latitude: photo.latitude,
+      longitude: photo.longitude,
+      uri: photo.uri,
+      timestamp: photo.timestamp,
+    }));
+  
+    // console.log for data check
+  console.log(JSON.stringify(locations, null, 2));
+
+  // Rendering the map component with dynamic data
   return (
     <View style={styles.container}>
       <MapView
         style={styles.map}
         initialRegion={{
-          latitude: 37.78825, // Default latitude
-          longitude: -122.4324, // Default longitude
-          latitudeDelta: 0.0922, // Zoom level
-          longitudeDelta: 0.0421, // Zoom level
+          latitude: locations[0]?.latitude || 0,
+          longitude: locations[0]?.longitude || 0,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
         }}
       >
-        {/* Example Marker */}
-        <Marker
-          coordinate={{ latitude: 37.78825, longitude: -122.4324 }}
-          title="Marker Title"
-          description="This is a description of the marker"
-        />
+        {locations.map(location => (
+          <Marker
+            key={location.id}
+            coordinate={{
+              latitude: location.latitude,
+              longitude: location.longitude,
+            }}
+            title={`Photo ID: ${location.id}`}
+            description={`Taken at: ${new Date(location.timestamp).toLocaleString()}`}
+          />
+        ))}
       </MapView>
     </View>
   );
@@ -30,6 +56,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   map: {
-    flex: 1, // Ensure the map fills the container
+    flex: 1,
   },
 });

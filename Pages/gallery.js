@@ -1,16 +1,23 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, Dimensions, ActivityIndicator, TextInput } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, Dimensions, ActivityIndicator, TextInput,Alert } from 'react-native';
 import { SafeAreaView } from 'react-native';
 import * as SQLite from 'expo-sqlite';
+import Map from './map';
+import Feather from '@expo/vector-icons/Feather';
+import * as FileSystem from 'expo-file-system';
+
 
 export default function Gallery({ navigation }) {
+  // States
   const [photos, setPhotos] = useState([]);
   const [filteredPhotos, setFilteredPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [db, setDb] = useState(null);
+  const [showMap,setshowMap] = useState(false)
 
+  // Functions
   useEffect(() => {
     initDB();
   }, []);
@@ -30,6 +37,67 @@ export default function Gallery({ navigation }) {
     }
   };
 
+  // Delete image function 
+  const deletePhoto = async (photoId, uri) => {
+    try {
+      // Delete from database using runAsync
+      const result = await db.runAsync(
+        'DELETE FROM photos WHERE id = ?',
+        [photoId]
+      );
+
+      if (result.changes > 0) {
+        // Successfully deleted from database
+        console.log(`Deleted photo with ID: ${photoId}`);
+        
+        // Remove from local state
+        const updatedPhotos = photos.filter(photo => photo.id !== photoId);
+        setPhotos(updatedPhotos);
+        setFilteredPhotos(updatedPhotos);
+        
+        // Delete the actual file from filesystem
+        try {
+          await FileSystem.deleteAsync(uri);
+          console.log('File deleted successfully');
+        } catch (fileError) {
+          console.error('Error deleting file:', fileError);
+          // Continue even if file deletion fails
+        }
+      } else {
+        throw new Error('No photo was deleted');
+      }
+    } catch (error) {
+      console.error('Error deleting photo:', error);
+      Alert.alert(
+        'Error',
+        'Failed to delete photo. Please try again.',
+        [{ text: 'OK' }]
+      );
+    }
+  };
+
+
+  // Confirmation Dialog for deleting an image
+  const handleLongPress = (photo) => {
+    Alert.alert(
+      'Delete Photo',
+      'Are you sure you want to delete this photo?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel'
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => deletePhoto(photo.id, photo.uri)
+        }
+      ],
+      { cancelable: true }
+    );
+  };
+
+  // Retrive Photos from the database
   const loadPhotos = async (database) => {
     try {
       const results = await database.getAllAsync('SELECT * FROM photos ORDER BY timestamp DESC');
@@ -42,6 +110,7 @@ export default function Gallery({ navigation }) {
     }
   };
 
+  // Filter images by date search
   const filterPhotos = () => {
     if (!searchQuery.trim()) {
       setFilteredPhotos(photos);
@@ -62,6 +131,7 @@ export default function Gallery({ navigation }) {
     setFilteredPhotos(filtered);
   };
 
+  // Refresh Gallery 
   const refreshGallery = () => {
     setLoading(true);
     if (db) {
@@ -69,14 +139,19 @@ export default function Gallery({ navigation }) {
     }
   };
 
+
+//  Navigate to the Image screen with photo object as a prop
   const handlePhotoPress = (photo) => {
     navigation.navigate('Image', { photo });
   };
 
+//  Render photo
   const renderPhoto = ({ item }) => (
     <TouchableOpacity 
       style={styles.photoContainer} 
       onPress={() => handlePhotoPress(item)}
+      onLongPress={() => handleLongPress(item)}
+      delayLongPress={500}
     >
       <Image
         source={{ uri: item.uri }}
@@ -87,8 +162,13 @@ export default function Gallery({ navigation }) {
           {new Date(item.timestamp).toLocaleDateString()}
         </Text>
       </View>
+      <View style={styles.deleteOverlay}>
+        <Text style={styles.deleteText}>Hold to delete</Text>
+      </View>
     </TouchableOpacity>
   );
+
+ 
 
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
@@ -105,7 +185,8 @@ export default function Gallery({ navigation }) {
       )}
     </View>
   );
-
+ 
+ 
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.content}>
@@ -113,8 +194,8 @@ export default function Gallery({ navigation }) {
         
         <View style={styles.header}>
           <Text style={styles.title}>Gallery</Text>
-          <TouchableOpacity onPress={refreshGallery}>
-            <Text style={styles.refreshButton}>Refresh</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Map',{ photos })}>
+            <Text style={styles.refreshButton}><Feather name="map-pin" size={26} color="black" /></Text>
           </TouchableOpacity>
         </View>
 
@@ -228,5 +309,44 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+    deleteOverlay: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.3)',
+      justifyContent: 'center',
+      alignItems: 'center',
+      opacity: 0,
+    },
+    deleteText: {
+      color: 'white',
+      fontSize: 12,
+      fontWeight: '600',
+      textAlign: 'center',
+    },
+    photoContainer: {
+      position: 'relative',
+      margin: 1,
+      width: '24%',
+      aspectRatio: 1,
+    },
+    photo: {
+      width: '100%',
+      height: '100%',
+    },
+    photoInfo: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      padding: 4,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    photoDate: {
+      color: 'white',
+      fontSize: 10,
+    },
   },
 });
