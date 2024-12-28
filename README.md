@@ -1,56 +1,30 @@
-# Birthday Card App
+# Gallery Application with Geolocation and SQLite
 
 ## Overview
-The Birthday Card App allows users to create custom birthday cards with personalized text, images, and decorations. Users can design unique cards, add custom messages, and enhance their cards with various creative elements. This app provides an intuitive interface for editing and formatting text, as well as the ability to add images and decorations to create a memorable birthday card experience.
-
-## Tech Stack
-- React Native
-- Expo version 52.0.9
+The Gallery Application is a mobile app that allows users to view images, see their locations on a map using geolocation, and store metadata about each image in a local SQLite database. The application leverages geolocation features to tag images with their location and integrates a map view to display where the images were taken. SQLite is used for local data storage, ensuring fast and efficient data management.
 
 ## Features
+- **Image Gallery**: Displays a grid or list of images stored within the app. Users can view images in full-screen mode or in a carousel/gallery view.
+- **Geolocation Integration**: Each image is tagged with its location (latitude and longitude) using the device's geolocation capabilities.
+- **Map Integration**: A map (Google Maps/Mapbox) displays the locations of all images with markers indicating where each image was taken.
+- **SQLite Database**: Stores image metadata (file paths, timestamps, geolocation data). CRUD operations (Create, Read, Update, Delete) are implemented for managing image data.
+- **Search and Filter**: Users can search for images based on location, date, or other metadata and filter images based on specific criteria.
+- **Security and Permissions**: The app requests necessary permissions for accessing geolocation data and storing images, with measures in place to protect user data.
 
-### Card Creation
-- Users can create custom birthday cards from scratch.
-- Cards can include personalized text, images, and decorations.
-
-### Text Editing
-- Users can add, edit, and format text on the card.
-- Text formatting options include changing the font, size, color, and alignment.
-- Users can move and position the text anywhere on the card.
-
-### Image and Decoration Support
-- Users can upload images to the card.
-- A selection of decorations (e.g., stickers, borders) can be added to enhance the card's appearance.
+## Requirements
+- **React Native** or **Expo** (for mobile app development)
+- **SQLite** (for local data storage)
+- **Geolocation API** (for obtaining location data)
+- **Map Integration** (Google Maps/Mapbox)
+- **Permissions**: Ensure permissions are requested for accessing geolocation and storing images.
 
 ## Installation
 
-1. Clone the repository:
-   ```bash
-   [git clone https://github.com/your-username/birthday-card-app.git](https://github.com/AlsonAfrica/Gallery-Suite.git)
+### 1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/gallery-app.git
+cd gallery-app
 
-2. Install the required dependencies:
-
-   ```bash
-     npm install
-
-3. Start the app:
-
-   ```bash
-     expo start
-
-4. Scan the provided QR code:
-
-## Usage
-1. Launch the app to start creating a new birthday card.
-2. Add custom text, format it as needed, and place it on the card.
-3. Upload images or choose from the available decorations to add to the card.
-4. View your created card
-
-## Contributing
-Feel free to fork the repository and submit pull requests. If you encounter any bugs or have suggestions for new features, please open an issue on the GitHub repository.
-
-## License
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 
 
