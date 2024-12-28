@@ -21,9 +21,53 @@ The Gallery Application is a mobile app that allows users to view images, see th
 ## Installation
 
 ### 1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/gallery-app.git
-cd gallery-app
+    ```bash
+    [git clone https://github.com/yourusername/gallery-app.git](https://github.com/AlsonAfrica/Gallery-Suite.git)
+
+### 2. Installed Dependencies:
+    ```bash
+      npm install
+
+### 3. Run Project:
+    ```bash
+      npx expo start
+
+# Usage
+
+## Image Gallery:
+
+- The app displays a grid or list of images stored locally.
+- Users can swipe through images or view them in full-screen mode.
+- Images are tagged with their location, which is displayed on a map.
+
+## Geolocation and Map:
+- When an image is taken, its geolocation is automatically captured (latitude and longitude).
+- The map displays the image's location using a marker.
+- Users can zoom in/out on the map and interact with it.
+
+## SQLite Database:
+- Image metadata (file path, timestamp, latitude, longitude) is stored in the SQLite database.
+- CRUD operations are available for adding, viewing, updating, and deleting image data.
+
+## Search and Filter:
+- Users can search for images by location, date, or metadata.
+- Filtering options are available to view images based on specific criteria.
+
+## Security and Permissions:
+- The app requests permissions to access geolocation data and store images.
+- All data stored in SQLite is encrypted to ensure security.
+
+## Documentation:
+- User Guide: Step-by-step instructions on how to use the gallery, view images, and interact with the map.
+- Developer Documentation: Includes setup instructions, an overview of the code structure, and guidelines for future maintenance and updates.
+
+# License
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+
+
+
+
 
 
 
