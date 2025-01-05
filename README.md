@@ -60,6 +60,7 @@ The Gallery Application is a mobile app that allows users to view images, see th
 ## Documentation:
 - User Guide: Step-by-step instructions on how to use the gallery, view images, and interact with the map.
 - Developer Documentation: Includes setup instructions, an overview of the code structure, and guidelines for future maintenance and updates.
+- Please follow the link for the Documentation:  https://docs.google.com/document/d/1irDuGJBWktH_nsNP2a28tt95Xpcu85oYkgSymby8j6w/edit?usp=sharing
 
 # License
 This project is licensed under the MIT License - see the LICENSE file for details.
