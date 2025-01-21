@@ -37,6 +37,7 @@ export default function Gallery({ navigation }) {
     }
   };
 
+
   // Delete image function 
   const deletePhoto = async (photoId, uri) => {
     try {
@@ -77,6 +78,7 @@ export default function Gallery({ navigation }) {
   };
 
 
+
   // Confirmation Dialog for deleting an image
   const handleLongPress = (photo) => {
     Alert.alert(
@@ -97,6 +99,7 @@ export default function Gallery({ navigation }) {
     );
   };
 
+
   // Retrive Photos from the database
   const loadPhotos = async (database) => {
     try {
@@ -109,6 +112,7 @@ export default function Gallery({ navigation }) {
       setLoading(false);
     }
   };
+
 
   // Filter images by date search
   const filterPhotos = () => {
@@ -131,6 +135,7 @@ export default function Gallery({ navigation }) {
     setFilteredPhotos(filtered);
   };
 
+
   // Refresh Gallery 
   const refreshGallery = () => {
     setLoading(true);
@@ -144,6 +149,7 @@ export default function Gallery({ navigation }) {
   const handlePhotoPress = (photo) => {
     navigation.navigate('Image', { photo });
   };
+
 
 //  Render photo
   const renderPhoto = ({ item }) => (
@@ -169,7 +175,7 @@ export default function Gallery({ navigation }) {
   );
 
  
-
+// If no photos are found or search query is empty, show empty state
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
       <Text style={styles.emptyStateText}>
@@ -187,6 +193,7 @@ export default function Gallery({ navigation }) {
   );
  
  
+  // Ui for the gallery page
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.content}>
@@ -227,13 +234,15 @@ export default function Gallery({ navigation }) {
   );
 }
 
+
+// Styles
 const windowWidth = Dimensions.get('window').width;
 const photoSize = (windowWidth - 50) / 4;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#F7F9FC', // Light blue-grey background
   },
   content: {
     flex: 1,
@@ -242,111 +251,120 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    borderBottomColor: '#E4E9F2',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   searchContainer: {
-    padding: 8,
+    padding: 12,
+    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    borderBottomColor: '#E4E9F2',
   },
   searchInput: {
-    height: 40,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 8,
-    paddingHorizontal: 12,
+    height: 44,
+    backgroundColor: '#EDF1F7',
+    borderRadius: 12,
+    paddingHorizontal: 16,
     fontSize: 16,
+    color: '#2E3A59',
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#2E3A59',
+    letterSpacing: -0.5,
   },
   refreshButton: {
-    color: '#007BFF',
+    color: '#3366FF',
     fontSize: 16,
+    fontWeight: '600',
   },
   photoGrid: {
-    padding: 8,
+    padding: 12,
   },
   photoContainer: {
-    margin: 4,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 8,
+    margin: 6,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     overflow: 'hidden',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   photo: {
     width: photoSize,
     height: photoSize,
+    backgroundColor: '#EDF1F7',
   },
   photoInfo: {
-    padding: 4,
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    padding: 8,
+    backgroundColor: '#FFFFFF',
   },
   photoDate: {
     fontSize: 12,
-    color: '#666',
+    color: '#8F9BB3',
+    fontWeight: '500',
   },
   emptyState: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: 24,
+    backgroundColor: '#FFFFFF',
   },
   emptyStateText: {
     fontSize: 18,
-    color: '#666',
-    marginBottom: 20,
+    color: '#8F9BB3',
+    marginBottom: 24,
+    textAlign: 'center',
+    lineHeight: 24,
   },
   captureButton: {
-    backgroundColor: '#007BFF',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
+    backgroundColor: '#3366FF',
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    elevation: 4,
+    shadowColor: '#3366FF',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
   },
   captureButtonText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: 'bold',
-    deleteOverlay: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(0,0,0,0.3)',
-      justifyContent: 'center',
-      alignItems: 'center',
-      opacity: 0,
-    },
-    deleteText: {
-      color: 'white',
-      fontSize: 12,
-      fontWeight: '600',
-      textAlign: 'center',
-    },
-    photoContainer: {
-      position: 'relative',
-      margin: 1,
-      width: '24%',
-      aspectRatio: 1,
-    },
-    photo: {
-      width: '100%',
-      height: '100%',
-    },
-    photoInfo: {
-      position: 'absolute',
-      bottom: 0,
-      left: 0,
-      right: 0,
-      padding: 4,
-      backgroundColor: 'rgba(0,0,0,0.5)',
-    },
-    photoDate: {
-      color: 'white',
-      fontSize: 10,
-    },
+    fontWeight: '600',
+    marginLeft: 8,
   },
+  deleteOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(231, 76, 60, 0.85)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    opacity: 0,
+  },
+  deleteText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '700',
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  }
 });

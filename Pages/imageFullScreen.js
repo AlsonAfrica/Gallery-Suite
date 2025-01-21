@@ -1,12 +1,67 @@
 import React from 'react';
-import { View, Image, StyleSheet, Dimensions, TouchableOpacity,Text } from 'react-native';
+import { View, Image, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native';
+import { PinchGestureHandler, State } from 'react-native-gesture-handler';
+import Animated, { 
+  useAnimatedGestureHandler,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring
+} from 'react-native-reanimated';
 
-const ImageFullScreen= ({ route, navigation }) => {
-  const { photo } = route.params;  
+const ImageFullScreen = ({ route, navigation }) => {
+  const { photo } = route.params;
+  
+  // Create animated values for scale and focal point
+  const scale = useSharedValue(1);
+  const focalX = useSharedValue(0);
+  const focalY = useSharedValue(0);
+
+  // Handle pinch gesture
+  const pinchHandler = useAnimatedGestureHandler({
+    onStart: (event) => {
+      focalX.value = event.focalX;
+      focalY.value = event.focalY;
+    },
+    onActive: (event) => {
+      scale.value = event.scale;
+    },
+    onEnd: () => {
+      // Reset scale with spring animation if it's too small
+      if (scale.value < 1) {
+        scale.value = withSpring(1);
+      }
+      // Limit maximum zoom
+      else if (scale.value > 4) {
+        scale.value = withSpring(4);
+      }
+    },
+  });
+
+  // Create animated style for the image
+  const animatedImageStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          scale: scale.value,
+        },
+      ],
+    };
+  });
+
+  const AnimatedImage = Animated.createAnimatedComponent(Image);
 
   return (
     <View style={styles.container}>
-      <Image source={{ uri: photo.uri }} style={styles.image} />
+      <PinchGestureHandler
+        onGestureEvent={pinchHandler}
+      >
+        <Animated.View>
+          <AnimatedImage
+            source={{ uri: photo.uri }}
+            style={[styles.image, animatedImageStyle]}
+          />
+        </Animated.View>
+      </PinchGestureHandler>
 
       <TouchableOpacity
         style={styles.closeButton}
@@ -31,7 +86,7 @@ const styles = StyleSheet.create({
   image: {
     width: windowWidth,
     height: windowHeight,
-    resizeMode: 'contain',  // This ensures the image fits within the screen
+    resizeMode: 'contain',
   },
   closeButton: {
     position: 'absolute',

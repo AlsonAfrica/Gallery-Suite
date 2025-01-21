@@ -8,7 +8,7 @@ import { BlurView } from 'expo-blur';
 // Icons
 import Entypo from '@expo/vector-icons/Entypo';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import Feather from '@expo/vector-icons/Feather';
+
 
 const { width } = Dimensions.get('window');
 
