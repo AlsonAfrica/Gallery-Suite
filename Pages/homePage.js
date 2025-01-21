@@ -56,17 +56,17 @@ export default function HomePage({ navigation }) {
               <Text style={styles.statsTitle}>Recent Activity</Text>
               <View style={styles.statsRow}>
                 <View style={styles.statItem}>
-                  <Text style={styles.statNumber}>247</Text>
+                  <Text style={styles.statNumber}>0</Text>
                   <Text style={styles.statLabel}>Photos</Text>
                 </View>
                 <View style={styles.statDivider} />
                 <View style={styles.statItem}>
-                  <Text style={styles.statNumber}>15</Text>
+                  <Text style={styles.statNumber}>0</Text>
                   <Text style={styles.statLabel}>Albums</Text>
                 </View>
                 <View style={styles.statDivider} />
                 <View style={styles.statItem}>
-                  <Text style={styles.statNumber}>8</Text>
+                  <Text style={styles.statNumber}>0</Text>
                   <Text style={styles.statLabel}>Places</Text>
                 </View>
               </View>
